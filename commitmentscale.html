@@ -286,7 +286,7 @@
     return out;
   }
 
-  function fmt(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+  function fmt(x) { return String(Math.round(x)); }
 
   function renderResults() {
     var s = scores();
@@ -294,7 +294,7 @@
     $("dims").innerHTML = DIMS.map(function (d) {
       return '<div class="dim"><div class="row"><span class="name">' + d.name + '</span>' +
              '<span class="val">' + fmt(s[d.key]) + ' <small>/ 10</small></span></div>' +
-             '<div class="track"><div class="fill" data-w="' + (s[d.key] * 10) + '"></div></div></div>';
+             '<div class="track"><div class="fill" data-w="' + (Math.round(s[d.key]) * 10) + '"></div></div></div>';
     }).join("");
     show("results");
     requestAnimationFrame(function () {
