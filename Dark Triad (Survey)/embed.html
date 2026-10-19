@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Dark Triad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --page: #030204;
+    --bg: #0c0710;
+    --ink: #f1e9f3;
+    --muted: #a897ae;
+    --line: rgba(241, 233, 243, 0.14);
+    --soft: rgba(241, 233, 243, 0.06);
+    --blood: #b3122a;
+    --blood-hi: #e2304a;
+    --nar: #e6b24c;
+    --mac: #52c98d;
+    --psy: #ea4b55;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --text: "Crimson Pro", Georgia, "Times New Roman", serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--text);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none; user-select: none;
+  }
+
+  /* Fixed 720x450 stage, scaled to fit whatever frame it's placed in */
+  #stage {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 720px; height: 450px;
+    transform-origin: center center;
+    background:
+      radial-gradient(120% 90% at 50% 110%, rgba(179, 18, 42, 0.22), transparent 60%),
+      radial-gradient(90% 70% at 50% -10%, rgba(90, 40, 120, 0.35), transparent 70%),
+      var(--bg);
+    overflow: hidden;
+  }
+
+  /* ---------- Atmosphere ---------- */
+  .cover {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0; transition: opacity .6s ease;
+  }
+  #stage.on-start .cover.loaded { opacity: .42; }
+  #stage:not(.on-start) .cover.loaded { opacity: .12; }
+
+  .fog {
+    position: absolute; inset: -20% -40%;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 30% at 20% 70%, rgba(200, 180, 220, 0.10), transparent 70%),
+      radial-gradient(35% 25% at 70% 80%, rgba(200, 180, 220, 0.08), transparent 70%),
+      radial-gradient(30% 20% at 45% 30%, rgba(200, 180, 220, 0.05), transparent 70%);
+    animation: drift 38s ease-in-out infinite alternate;
+  }
+  .fog.two { animation-duration: 54s; animation-direction: alternate-reverse; opacity: .8; transform: scaleX(-1); }
+  @keyframes drift { from { translate: -8% 0; } to { translate: 8% -3%; } }
+
+  .ember {
+    position: absolute; bottom: -10px;
+    width: 3px; height: 3px; border-radius: 50%;
+    background: #ff7a4a;
+    box-shadow: 0 0 6px 2px rgba(255, 90, 50, 0.6);
+    opacity: 0;
+    animation: rise linear infinite;
+    pointer-events: none;
+  }
+  @keyframes rise {
+    0%   { transform: translate(0, 0); opacity: 0; }
+    10%  { opacity: .9; }
+    100% { transform: translate(var(--sway), -480px); opacity: 0; }
+  }
+
+  .vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.78) 100%);
+    z-index: 5;
+  }
+
+  /* ---------- Screens ---------- */
+  .screen {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    padding: 24px 40px;
+    z-index: 10;
+  }
+  .screen.active { display: flex; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; touch-action: manipulation; }
+  button:focus-visible { outline: 3px solid var(--blood-hi); outline-offset: 3px; }
+
+  .primary {
+    font-family: var(--display); font-weight: 700;
+    font-size: 26px; letter-spacing: .08em;
+    min-width: 260px; height: 80px; padding: 0 32px; border-radius: 16px;
+    color: #fff;
+    background: linear-gradient(180deg, var(--blood-hi), var(--blood) 60%, #6e0a19);
+    border: 1px solid rgba(255, 120, 130, 0.45);
+    box-shadow: 0 0 28px rgba(226, 48, 74, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: transform .1s ease, box-shadow .2s ease, filter .2s ease;
+  }
+  .primary:hover { filter: brightness(1.1); box-shadow: 0 0 40px rgba(226, 48, 74, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+  .primary:active { transform: scale(.97); }
+
+  .ghost {
+    font-family: var(--display); font-weight: 700; letter-spacing: .06em;
+    height: 60px; padding: 0 26px; border-radius: 14px;
+    font-size: 20px;
+    border: 1px solid var(--line);
+    background: rgba(12, 7, 16, 0.6);
+    transition: background .15s ease, border-color .15s ease, transform .1s ease;
+  }
+  .ghost:hover { background: rgba(241, 233, 243, 0.08); border-color: rgba(241, 233, 243, 0.3); }
+  .ghost:active { transform: scale(.97); }
+
+  /* ---------- Start ---------- */
+  #start { align-items: center; justify-content: center; text-align: center; }
+  .eyebrow {
+    font-family: var(--display); font-size: 15px; letter-spacing: .32em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  #start h1 {
+    font-family: var(--display); font-weight: 900;
+    font-size: 66px; line-height: 1; letter-spacing: .04em;
+    margin: 10px 0 14px;
+    color: #fbf3f5;
+    text-shadow: 0 0 18px rgba(226, 48, 74, 0.75), 0 0 46px rgba(179, 18, 42, 0.55), 0 3px 0 #2a0710;
+    animation: flicker 6s infinite;
+  }
+  @keyframes flicker {
+    0%, 18%, 22%, 62%, 64%, 100% { opacity: 1; }
+    20% { opacity: .55; }
+    63% { opacity: .75; }
+  }
+  .triad { display: flex; gap: 12px; justify-content: center; margin-bottom: 14px; }
+  .triad span {
+    font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: .1em; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 999px;
+    border: 1px solid currentColor;
+    background: rgba(0, 0, 0, 0.35);
+  }
+  .triad .n { color: var(--nar); } .triad .m { color: var(--mac); } .triad .p { color: var(--psy); }
+  #start .lede { font-size: 22px; color: #d9cddd; margin-bottom: 22px; font-style: italic; }
+  #start .fine { margin-top: 18px; font-size: 15px; color: var(--muted); }
+
+  /* ---------- Item ---------- */
+  #item { padding-top: 18px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .back {
+    height: 56px; padding: 0 22px 0 14px; border-radius: 14px;
+    font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: .06em;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid transparent;
+  }
+  .back:hover { background: var(--soft); border-color: var(--line); color: var(--ink); }
+  .back[hidden] { visibility: hidden; display: flex; }
+  .count {
+    font-family: var(--display); font-size: 18px; letter-spacing: .08em; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .count b { color: var(--ink); font-weight: 700; }
+  .progress { height: 8px; border-radius: 4px; background: var(--soft); margin-top: 8px; overflow: hidden; }
+  .progress div {
+    height: 100%; width: 0; border-radius: 4px;
+    background: linear-gradient(90deg, #6e0a19, var(--blood-hi));
+    box-shadow: 0 0 12px rgba(226, 48, 74, 0.8);
+    transition: width .35s ease;
+  }
+
+  .stem { margin-top: 16px; text-align: center; font-size: 22px; font-style: italic; color: var(--muted); }
+  .prompt {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    font-size: 36px; line-height: 1.18; font-weight: 500;
+    padding: 0 16px 6px;
+    text-wrap: balance;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+  }
+
+  .scale { display: flex; justify-content: center; gap: 12px; }
+  .opt {
+    width: 116px; height: 108px; border-radius: 16px;
+    border: 1.5px solid var(--line);
+    background: rgba(20, 12, 26, 0.78);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    transition: background .12s ease, border-color .12s ease, transform .1s ease, box-shadow .15s ease;
+  }
+  .opt .num { font-family: var(--display); font-weight: 700; font-size: 34px; line-height: 1; }
+  .opt .lab { font-size: 16px; line-height: 1.1; color: var(--muted); min-height: 36px; padding: 0 8px; text-align: center; display: flex; align-items: center; }
+  .opt:hover { border-color: rgba(226, 48, 74, 0.7); background: rgba(179, 18, 42, 0.18); }
+  .opt:active { transform: scale(.95); }
+  .opt.chosen {
+    background: linear-gradient(180deg, var(--blood-hi), var(--blood));
+    border-color: #ff8a96;
+    box-shadow: 0 0 26px rgba(226, 48, 74, 0.7);
+  }
+  .opt.chosen .lab { color: #fff; }
+
+  /* ---------- Results ---------- */
+  #results { padding: 18px 40px 18px; }
+  #results h2 {
+    font-family: var(--display); font-weight: 900; font-size: 30px; letter-spacing: .06em;
+    text-align: center;
+    text-shadow: 0 0 18px rgba(226, 48, 74, 0.6);
+  }
+  .cards { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 12px 0; }
+  .card {
+    --c: var(--ink);
+    position: relative;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 12px 12px; border-radius: 18px;
+    background: linear-gradient(180deg, rgba(30, 18, 36, 0.86), rgba(10, 6, 12, 0.92));
+    border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+    text-align: center;
+    opacity: 0; transform: translateY(14px);
+    transition: transform .12s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .card.in { animation: rise-in .6s cubic-bezier(.2, .8, .2, 1) forwards; }
+  @keyframes rise-in { to { opacity: 1; transform: none; } }
+  .card:hover { border-color: var(--c); box-shadow: 0 0 24px color-mix(in srgb, var(--c) 35%, transparent); }
+  .card:active { transform: scale(.98); }
+  .card.top { border-color: var(--c); box-shadow: 0 0 30px color-mix(in srgb, var(--c) 40%, transparent); }
+  .card .crown {
+    position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+    font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--c); color: #120a10;
+    white-space: nowrap;
+  }
+  .art {
+    position: relative;
+    width: 128px; height: 128px; border-radius: 50%;
+    overflow: hidden; flex: none;
+    background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--c) 30%, #0c0710), #07040a 75%);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 70%, transparent), 0 0 26px color-mix(in srgb, var(--c) 40%, transparent);
+    color: var(--c);
+  }
+  .art svg { position: absolute; inset: 18%; width: 64%; height: 64%; }
+  .art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .card .name {
+    margin-top: 12px;
+    font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .04em;
+    color: var(--c);
+  }
+  .card .score { font-family: var(--display); font-weight: 900; font-size: 40px; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .card .score small { font-size: 16px; font-weight: 500; color: var(--muted); }
+  .card .track { width: 100%; height: 8px; border-radius: 4px; background: var(--soft); overflow: hidden; margin-top: 4px; }
+  .card .fill {
+    height: 100%; width: 0; border-radius: 4px;
+    background: var(--c); box-shadow: 0 0 10px var(--c);
+    transition: width 1.1s cubic-bezier(.2, .8, .2, 1);
+  }
+  .card .band { margin-top: 6px; font-size: 17px; font-style: italic; color: #d9cddd; }
+
+  .res-foot { display: flex; align-items: center; justify-content: space-between; }
+  .res-foot .hint { font-size: 18px; font-style: italic; color: var(--muted); }
+
+  /* ---------- Detail overlay ---------- */
+  #detail {
+    position: absolute; inset: 0; z-index: 20;
+    display: none;
+    background:
+      radial-gradient(70% 90% at 20% 50%, color-mix(in srgb, var(--c) 16%, transparent), transparent 70%),
+      #08050b;
+    padding: 26px 32px 22px;
+  }
+  #detail.open { display: flex; gap: 28px; animation: fade .3s ease; }
+  #detail .art { width: 250px; height: 250px; border-radius: 22px; align-self: center; }
+  #detail .art svg { inset: 20%; width: 60%; height: 60%; }
+  .d-body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .d-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .d-name { font-family: var(--display); font-weight: 900; font-size: 32px; line-height: 1.05; color: var(--c); }
+  .d-score { margin-top: 4px; font-size: 21px; color: #d9cddd; }
+  .d-score b { font-family: var(--display); color: var(--ink); }
+  .close {
+    flex: none; width: 56px; height: 56px; border-radius: 14px;
+    display: grid; place-items: center;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .close:hover { background: var(--soft); color: var(--ink); }
+  .d-def { margin-top: 12px; font-size: 20px; line-height: 1.3; }
+  .d-label {
+    margin-top: 14px;
+    font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--c);
+  }
+  .d-list { margin-top: 6px; list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .d-list li { font-size: 19px; line-height: 1.25; padding-left: 22px; position: relative; color: #e4d9e7; }
+  .d-list li::before { content: "\2726"; position: absolute; left: 0; top: 1px; font-size: 13px; color: var(--c); }
+  .d-foot { margin-top: auto; display: flex; justify-content: flex-end; gap: 12px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .screen.active, #detail.open { animation: none; }
+    #start h1, .fog, .ember { animation: none; }
+    .ember { display: none; }
+    .card { opacity: 1; transform: none; }
+    .card.in { animation: none; }
+    .fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage" class="on-start">
+
+  <div class="cover" id="cover" aria-hidden="true"></div>
+  <div class="fog" aria-hidden="true"></div>
+  <div class="fog two" aria-hidden="true"></div>
+  <div id="embers" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <section id="start" class="screen active">
+    <span class="eyebrow">A personality survey</span>
+    <h1>The Dark Triad</h1>
+    <div class="triad"><span class="n">Narcissism</span><span class="m">Machiavellianism</span><span class="p">Psychopathy</span></div>
+    <p class="lede">15 statements. Answer honestly&hellip; no one is watching.</p>
+    <button class="primary" id="startBtn">Enter</button>
+    <p class="fine">For education only &middot; not a clinical assessment</p>
+  </section>
+
+  <section id="item" class="screen">
+    <div class="topbar">
+      <button class="back" id="backBtn" aria-label="Previous statement">
+        <svg width="22" height="22" viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <p class="stem">In general, I&hellip;</p>
+    <p class="prompt" id="prompt" aria-live="polite"></p>
+    <div class="scale" id="scale" role="group" aria-label="Rating from 1 (strongly disagree) to 5 (strongly agree)"></div>
+  </section>
+
+  <section id="results" class="screen">
+    <h2>Your Dark Triad</h2>
+    <div class="cards" id="cards"></div>
+    <div class="res-foot">
+      <span class="hint">Tap a portrait to look closer</span>
+      <button class="ghost" id="retakeBtn">Retake</button>
+    </div>
+  </section>
+
+  <div id="detail" role="dialog" aria-modal="true" aria-labelledby="dName">
+    <div class="art" id="dArt"></div>
+    <div class="d-body">
+      <div class="d-head">
+        <div>
+          <h3 class="d-name" id="dName"></h3>
+          <p class="d-score" id="dScore"></p>
+        </div>
+        <button class="close" id="closeBtn" aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <p class="d-def" id="dDef"></p>
+      <p class="d-label">What this might look like</p>
+      <ul class="d-list" id="dList"></ul>
+      <div class="d-foot">
+        <button class="ghost" id="nextBtn">Next trait &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Public-domain IPIP-style items mapped to the Dark Triad, 5 per trait.
+  // rev = reverse-scored.
+  var ITEMS = [
+    { id: "NAR1", trait: "NAR", t: "Like to be the center of attention." },
+    { id: "NAR2", trait: "NAR", t: "Think I am a special person." },
+    { id: "NAR3", trait: "NAR", t: "Prefer to blend into the crowd.", rev: true },
+    { id: "NAR4", trait: "NAR", t: "Feel I deserve more recognition than I get." },
+    { id: "NAR5", trait: "NAR", t: "Enjoy being admired by others." },
+
+    { id: "MAC1", trait: "MAC", t: "Manipulate others to get my way." },
+    { id: "MAC2", trait: "MAC", t: "Use flattery to achieve my goals." },
+    { id: "MAC3", trait: "MAC", t: "Believe most people can be trusted.", rev: true },
+    { id: "MAC4", trait: "MAC", t: "Keep track of information I can use against people later." },
+    { id: "MAC5", trait: "MAC", t: "Value strategy and planning over honesty." },
+
+    { id: "PSY1", trait: "PSY", t: "Rarely feel guilty about my actions." },
+    { id: "PSY2", trait: "PSY", t: "Take risks without thinking about consequences." },
+    { id: "PSY3", trait: "PSY", t: "Feel sorry for people who are treated badly.", rev: true },
+    { id: "PSY4", trait: "PSY", t: "Break rules when it suits me." },
+    { id: "PSY5", trait: "PSY", t: "Seek excitement even when it might be dangerous." }
+  ];
+
+  // Present the items interleaved (N, M, P, N, M, P, ...) so no trait clusters together.
+  var ORDER = [];
+  for (var k = 0; k < 5; k++) ORDER.push(ITEMS[k], ITEMS[5 + k], ITEMS[10 + k]);
+
+  var TRAITS = [
+    { key: "NAR", name: "Narcissism", color: "var(--nar)", file: "narcissism",
+      def: "A tendency toward grandiosity, entitlement, and a strong need for admiration and status.",
+      ex: {
+        low:  ["Prefer teamwork and shared credit.", "Stay humble and receptive to feedback.", "Feel comfortable outside the spotlight."],
+        mid:  ["Enjoy recognition yet stay grounded.", "Balance confidence with empathy.", "Can lead assertively but collaboratively."],
+        high: ["Crave admiration and attention.", "May dominate or seek status constantly.", "Motivated strongly by praise and recognition."]
+      } },
+    { key: "MAC", name: "Machiavellianism", color: "var(--mac)", file: "machiavellianism",
+      def: "A strategic, manipulative orientation emphasizing self-interest, cynicism, and calculation.",
+      ex: {
+        low:  ["Highly transparent and cooperative.", "Value fairness and long-term trust.", "Avoid manipulative tactics entirely."],
+        mid:  ["Can negotiate strategically yet ethically.", "Know when to compromise or persuade.", "Balance ambition with honesty."],
+        high: ["Comfortable using deception for gain.", "View relationships instrumentally.", "Prefer control and leverage over trust."]
+      } },
+    { key: "PSY", name: "Psychopathy", color: "var(--psy)", file: "psychopathy",
+      def: "A pattern of low empathy, impulsivity, thrill-seeking, and disregard for rules or consequences.",
+      ex: {
+        low:  ["Empathetic and rule-conscious.", "Think before acting and plan ahead.", "Avoid unnecessary risk or conflict."],
+        mid:  ["Occasionally seek excitement responsibly.", "Can be bold but still aware of others.", "Adapt quickly to stress."],
+        high: ["Enjoy risk and excitement.", "Show little remorse for harm caused.", "Feel unconstrained by rules or limits."]
+      } }
+  ];
+
+  // Drawn stand-ins, shown until (or unless) the ChatGPT artwork is in img/.
+  var EMBLEMS = {
+    NAR: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+         '<path d="M36 12l5 7 9-9 9 9 5-7 2 12H34z"/><ellipse cx="50" cy="48" rx="20" ry="22"/><ellipse cx="50" cy="48" rx="13" ry="15" opacity=".5"/>' +
+         '<path d="M46 40l5 7-4 5 5 6" opacity=".7"/><path d="M50 70v20M43 90h14"/></svg>',
+    MAC: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+         '<path d="M22 18h56M50 8v22"/><path d="M26 18v44M74 18v44M50 30v22" stroke-width="1.6" stroke-dasharray="2 4"/>' +
+         '<circle cx="26" cy="68" r="6"/><circle cx="74" cy="68" r="6"/><circle cx="50" cy="58" r="6"/>' +
+         '<path d="M18 92c2-10 6-14 8-17 2 3 6 7 8 17M66 92c2-10 6-14 8-17 2 3 6 7 8 17M42 92c2-14 6-21 8-24 2 3 6 10 8 24"/></svg>',
+    PSY: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+         '<path d="M50 10c-20 0-32 12-32 32 0 26 16 46 32 48 16-2 32-22 32-48 0-20-12-32-32-32z"/>' +
+         '<path d="M30 42c4-4 10-4 14 0-4 3-10 3-14 0zM56 42c4-4 10-4 14 0-4 3-10 3-14 0z"/><path d="M36 66c8 6 20 6 28 0"/>' +
+         '<path d="M56 12l-4 12 6 6-5 10" opacity=".7"/></svg>'
+  };
+
+  var answers = {};
+  var idx = 0;
+  var locked = false;
+  var lastScores = null;
+  var detailKey = null;
+  var artSrc = {};          // trait key -> resolved image URL (or undefined)
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function show(id) {
+    document.querySelectorAll(".screen").forEach(function (s) { s.classList.remove("active"); });
+    $(id).classList.add("active");
+    $("stage").classList.toggle("on-start", id === "start");
+  }
+
+  // ----- Artwork: try img/<name>.jpg, then .png; keep the emblem if neither exists.
+  function findImage(name, cb) {
+    var tries = ["img/" + name + ".jpg", "img/" + name + ".png", "img/" + name + ".webp"];
+    (function next(i) {
+      if (i >= tries.length) return;
+      var im = new Image();
+      im.onload = function () { cb(tries[i]); };
+      im.onerror = function () { next(i + 1); };
+      im.src = tries[i];
+    })(0);
+  }
+  TRAITS.forEach(function (tr) { findImage(tr.file, function (src) { artSrc[tr.key] = src; }); });
+  findImage("cover", function (src) {
+    $("cover").style.backgroundImage = 'url("' + src + '")';
+    $("cover").classList.add("loaded");
+  });
+
+  function artHTML(tr) {
+    return EMBLEMS[tr.key] + (artSrc[tr.key] ? '<img src="' + artSrc[tr.key] + '" alt="">' : "");
+  }
+
+  // ----- Embers
+  for (var e = 0; e < 18; e++) {
+    var s = document.createElement("span");
+    s.className = "ember";
+    s.style.left = (Math.random() * 100) + "%";
+    s.style.setProperty("--sway", ((Math.random() - 0.5) * 120) + "px");
+    s.style.animationDuration = (8 + Math.random() * 9) + "s";
+    s.style.animationDelay = (-Math.random() * 16) + "s";
+    var size = 2 + Math.random() * 2.5;
+    s.style.width = s.style.height = size + "px";
+    $("embers").appendChild(s);
+  }
+
+  // ----- Rating buttons (built once)
+  var LABELS = ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"];
+  LABELS.forEach(function (lab, i) {
+    var b = document.createElement("button");
+    b.className = "opt";
+    b.dataset.v = i + 1;
+    b.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="lab">' + lab + '</span>';
+    b.setAttribute("aria-label", (i + 1) + ", " + lab);
+    b.addEventListener("click", function () { choose(+this.dataset.v); });
+    $("scale").appendChild(b);
+  });
+
+  function renderItem() {
+    var it = ORDER[idx];
+    $("prompt").textContent = it.t;
+    $("count").innerHTML = "<b>" + (idx + 1) + "</b> of " + ORDER.length;
+    $("bar").style.width = (idx / ORDER.length * 100) + "%";
+    $("backBtn").hidden = idx === 0;
+    document.querySelectorAll(".opt").forEach(function (o) {
+      o.classList.toggle("chosen", +o.dataset.v === answers[it.id]);
+    });
+    show("item");
+  }
+
+  function choose(v) {
+    if (locked) return;
+    locked = true;
+    answers[ORDER[idx].id] = v;
+    document.querySelectorAll(".opt").forEach(function (o) {
+      o.classList.toggle("chosen", +o.dataset.v === v);
+    });
+    $("bar").style.width = ((idx + 1) / ORDER.length * 100) + "%";
+    setTimeout(function () {
+      locked = false;
+      if (idx < ORDER.length - 1) { idx++; renderItem(); }
+      else { renderResults(); }
+    }, 240);
+  }
+
+  // Each trait: mean of its 5 items (1-5, reverse items flipped), mapped to 0-100.
+  function scores() {
+    var out = {};
+    TRAITS.forEach(function (tr) {
+      var sum = 0, n = 0;
+      ITEMS.forEach(function (it) {
+        if (it.trait !== tr.key || answers[it.id] == null) return;
+        sum += it.rev ? 6 - answers[it.id] : answers[it.id];
+        n++;
+      });
+      out[tr.key] = n ? Math.round((sum / n - 1) / 4 * 100) : 0;
+    });
+    return out;
+  }
+
+  function band(p) { return p <= 33 ? "low" : p <= 66 ? "mid" : "high"; }
+  var BAND_NAME = { low: "Dormant", mid: "Stirring", high: "Unleashed" };
+
+  function renderResults() {
+    var s = lastScores = scores();
+    var topKey = TRAITS.reduce(function (a, b) { return s[b.key] > s[a.key] ? b : a; }).key;
+    var tie = TRAITS.filter(function (tr) { return s[tr.key] === s[topKey]; }).length > 1;
+
+    $("cards").innerHTML = TRAITS.map(function (tr) {
+      var isTop = !tie && tr.key === topKey && s[tr.key] > 0;
+      return '<button class="card' + (isTop ? " top" : "") + '" data-k="' + tr.key + '" style="--c:' + tr.color + '"' +
+             ' aria-label="' + tr.name + ', ' + s[tr.key] + ' out of 100. Show details.">' +
+             (isTop ? '<span class="crown">Strongest</span>' : "") +
+             '<span class="art">' + artHTML(tr) + '</span>' +
+             '<span class="name">' + tr.name + '</span>' +
+             '<span class="score"><span class="n" data-to="' + s[tr.key] + '">0</span><small> / 100</small></span>' +
+             '<span class="track"><span class="fill" style="display:block" data-w="' + s[tr.key] + '"></span></span>' +
+             '<span class="band">' + BAND_NAME[band(s[tr.key])] + '</span>' +
+             '</button>';
+    }).join("");
+
+    document.querySelectorAll(".card").forEach(function (c) {
+      c.addEventListener("click", function () { openDetail(c.dataset.k); });
+    });
+
+    show("results");
+
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.querySelectorAll(".card").forEach(function (c, i) {
+      setTimeout(function () {
+        c.classList.add("in");
+        var fill = c.querySelector(".fill");
+        fill.style.width = fill.dataset.w + "%";
+        countUp(c.querySelector(".n"), reduce ? 0 : 1100);
+      }, reduce ? 0 : 150 + i * 220);
+    });
+  }
+
+  function countUp(el, ms) {
+    var to = +el.dataset.to;
+    if (!ms) { el.textContent = to; return; }
+    var t0 = performance.now();
+    (function step(t) {
+      var p = Math.min(1, (t - t0) / ms);
+      el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+
+  function openDetail(key) {
+    var tr = TRAITS.filter(function (t) { return t.key === key; })[0];
+    var p = lastScores[key];
+    detailKey = key;
+    $("detail").style.setProperty("--c", tr.color);
+    $("dArt").innerHTML = artHTML(tr);
+    $("dName").textContent = tr.name;
+    $("dScore").innerHTML = "<b>" + p + "</b> / 100 &middot; <i>" + BAND_NAME[band(p)] + "</i>";
+    $("dDef").textContent = tr.def;
+    $("dList").innerHTML = tr.ex[band(p)].map(function (x) { return "<li>" + x + "</li>"; }).join("");
+    $("detail").classList.add("open");
+  }
+  function closeDetail() { $("detail").classList.remove("open"); detailKey = null; }
+
+  $("closeBtn").addEventListener("click", closeDetail);
+  $("nextBtn").addEventListener("click", function () {
+    var i = TRAITS.map(function (t) { return t.key; }).indexOf(detailKey);
+    openDetail(TRAITS[(i + 1) % TRAITS.length].key);
+  });
+
+  $("startBtn").addEventListener("click", function () { idx = 0; renderItem(); });
+  $("backBtn").addEventListener("click", function () { if (idx > 0 && !locked) { idx--; renderItem(); } });
+  $("retakeBtn").addEventListener("click", function () {
+    answers = {}; idx = 0; closeDetail(); show("start");
+  });
+
+  // Keyboard: 1-5 to answer, Backspace / left arrow to go back, Escape closes details
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && detailKey) { closeDetail(); return; }
+    if (!$("item").classList.contains("active")) return;
+    if (e.key >= "1" && e.key <= "5") choose(+e.key);
+    else if ((e.key === "Backspace" || e.key === "ArrowLeft") && idx > 0 && !locked) { idx--; renderItem(); }
+  });
+
+  function fit() {
+    var d = document.documentElement;
+    var sc = Math.min(d.clientWidth / 720, d.clientHeight / 450);
+    $("stage").style.transform = "translate(-50%, -50%) scale(" + sc + ")";
+  }
+  window.addEventListener("resize", fit);
+  fit();
+</script>
+</body>
+</html>
