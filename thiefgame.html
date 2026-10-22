@@ -152,8 +152,6 @@
 
 <script>
 (function(){
-  var KEY = 'psy170-heist-v1';
-
   var ROLE = {
     thief: {
       word: 'THIEF',
@@ -195,12 +193,6 @@
     }
   };
 
-  function load(){
-    try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e){ return null; }
-  }
-  function save(d){
-    try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e){}
-  }
   function coin(){
     // crypto-backed so two phones side by side don't correlate
     try {
@@ -210,11 +202,9 @@
     } catch(e){ return Math.random() < 0.5; }
   }
 
-  var state = load();
-  if (!state || !state.role || !state.story) {
-    state = { role: coin() ? 'thief' : 'innocent', story: coin() ? 'honest' : 'lie', step: 'intro' };
-    save(state);
-  }
+  // Nothing is stored: every page load is a brand new game, back at the
+  // intro with a brand new assignment.
+  var state = { role: coin() ? 'thief' : 'innocent', story: coin() ? 'honest' : 'lie' };
 
   var $ = function(id){ return document.getElementById(id); };
 
@@ -243,8 +233,6 @@
   }
 
   function show(step){
-    state.step = step;
-    save(state);
     ['intro','role','story','done'].forEach(function(k){
       $('s-' + k).classList.toggle('on', k === step);
     });
@@ -252,7 +240,7 @@
   }
 
   paint();
-  show(state.step || 'intro');
+  show('intro');
 
   $('go-role').addEventListener('click',  function(){ show('role'); });
   $('go-told').addEventListener('click',  function(){ show('story'); });
@@ -268,12 +256,6 @@
   ['mouseup','mouseleave','touchend','touchcancel','pointerup','pointercancel'].forEach(function(e){
     peek.addEventListener(e, off);
   });
-
-  // ?new in the URL forces a fresh draw (handy for the instructor demo)
-  if (location.search.indexOf('new') > -1) {
-    try { localStorage.removeItem(KEY); } catch(e){}
-    location.href = location.pathname;
-  }
 })();
 </script>
 </body>
