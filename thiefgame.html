@@ -92,12 +92,6 @@
   }
   .peek.revealed .hidden-role{filter:none;opacity:1}
   .peek .hint{font-size:.8rem;color:var(--mute);margin:.9rem 0 0}
-  footer{
-    text-align:center;font-size:.72rem;color:#59628a;
-    padding:0 1rem max(1rem,env(safe-area-inset-bottom));
-  }
-  footer button{display:inline;width:auto;background:none;color:#59628a;
-    text-decoration:underline;padding:.35rem;font-size:.72rem;font-weight:500}
 </style>
 </head>
 <body>
@@ -109,9 +103,7 @@
     <p class="eyebrow">Classroom activity</p>
     <h1>The Heist</h1>
     <p class="lead">In a moment this phone will secretly assign you a role.</p>
-    <p>Some of you will be told to steal a prize from the front of the room. Some of you will be told to take nothing. Then you'll each be told whether to tell the truth or lie about it.</p>
-    <p>Afterward, the class tries to figure out who's lying.</p>
-    <div class="note">Keep your screen to yourself. If anyone sees your assignment, the whole activity falls apart.</div>
+    <div class="note">Keep your screen to yourself. Don't blow your cover!</div>
     <div style="height:1.25rem"></div>
     <button id="go-role">Get my assignment</button>
   </section>
@@ -129,7 +121,6 @@
       <ol class="steps" id="role-steps"></ol>
     </div>
     <button id="go-told">I've done it &mdash; what do I say?</button>
-    <div class="note">Everyone walks to the front, whether or not they take something. That way nobody can be caught by behavior alone.</div>
   </section>
 
   <!-- ===== 3. STORY ===== -->
@@ -139,10 +130,6 @@
       <div class="label">When they question you</div>
       <p class="role" id="story-word">&mdash;</p>
       <p class="sub" id="story-sub"></p>
-    </div>
-    <div class="card">
-      <p class="eyebrow" style="margin-bottom:.7rem">Your story</p>
-      <ol class="steps" id="story-steps"></ol>
     </div>
     <button id="go-done">Got it</button>
   </section>
@@ -159,15 +146,9 @@
       </div>
       <p class="hint">Press and hold to reveal</p>
     </div>
-    <div class="note">Commit to your story. Add a detail or two. Don't crack, don't over-explain, and don't tell anyone what this screen said &mdash; not even after.</div>
   </section>
 
 </div>
-
-<footer>
-  <span>PSY 170 &middot; deception detection</span>
-  <button id="reset">reset this phone</button>
-</footer>
 
 <script>
 (function(){
@@ -198,39 +179,19 @@
   var STORY = {
     'thief|honest': {
       word: 'TELL THE TRUTH',
-      sub: 'Admit that you took a prize.',
-      steps: [
-        'Say plainly that you took one of the prizes.',
-        'Describe what you took and where you put it.',
-        'Answer every follow-up question honestly.'
-      ]
+      sub: 'Admit that you took a prize.'
     },
     'thief|lie': {
       word: 'LIE',
-      sub: 'Deny that you took anything.',
-      steps: [
-        'Insist you went up, looked, and came back empty-handed.',
-        'Have a reason ready for why you went up at all.',
-        'Stay calm and consistent. Do not change your story under pressure.'
-      ]
+      sub: 'Deny that you took anything.'
     },
     'innocent|honest': {
       word: 'TELL THE TRUTH',
-      sub: 'Say that you took nothing.',
-      steps: [
-        'Say plainly that you went up and took nothing.',
-        'Describe honestly what you saw and did up there.',
-        'Answer every follow-up question honestly.'
-      ]
+      sub: 'Say that you took nothing.'
     },
     'innocent|lie': {
       word: 'LIE',
-      sub: 'Claim that you took a prize.',
-      steps: [
-        'Insist that you took one of the prizes.',
-        'Make up what you took and where you supposedly put it.',
-        'Stay calm and consistent. Do not change your story under pressure.'
-      ]
+      sub: 'Claim that you took a prize.'
     }
   };
 
@@ -276,7 +237,6 @@
 
     $('story-word').textContent = s.word;
     $('story-sub').textContent  = s.sub;
-    list($('story-steps'), s.steps);
 
     $('peek-role').textContent  = r.word;
     $('peek-story').textContent = s.sub;
@@ -307,13 +267,6 @@
   });
   ['mouseup','mouseleave','touchend','touchcancel','pointerup','pointercancel'].forEach(function(e){
     peek.addEventListener(e, off);
-  });
-
-  $('reset').addEventListener('click', function(){
-    if (confirm('Clear this phone and draw a brand new assignment?')) {
-      try { localStorage.removeItem(KEY); } catch(e){}
-      location.href = location.pathname;
-    }
   });
 
   // ?new in the URL forces a fresh draw (handy for the instructor demo)
