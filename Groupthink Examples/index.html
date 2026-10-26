@@ -167,15 +167,14 @@
     <section class="screen" id="s-line">
       <h2>Your turn to talk.</h2>
       <p class="sub">Take turns in your group. When it is your turn, open with this.</p>
-      <div class="card" id="line-card" hidden>
+      <div class="card" id="line-card">
         <blockquote class="quote"><p id="line-text"></p></blockquote>
         <p class="meta">
           Your case: <b id="meta-title"></b><br />
           The symptom at fault: <b id="meta-symptom"></b>
         </p>
       </div>
-      <button id="go-reveal">Reveal Opening Line</button>
-      <button class="ghost" id="back-number" hidden>Show My Number Again</button>
+      <button class="ghost" id="back-number">Show My Number Again</button>
       <button class="reset" id="restart">Start over with a new case</button>
     </section>
   </main>
@@ -195,7 +194,7 @@
       n: 1,
       title: 'Submarine B-59, October 1962',
       symptom: 'Direct conformity pressure',
-      line: 'Did you know the Cold War came down to one guy in a 120-degree submarine refusing to go along with his two bosses?',
+      line: 'Did you know that one man prevented the world from entering nuclear war?',
       screens: [
         { img:'case1-hero.jpg', lead:true, btn:'Reveal Your Case',
           html:'One man stood between the world and complete nuclear annihilation.' },
@@ -213,54 +212,54 @@
       n: 2,
       title: 'The peanut guideline, 2000',
       symptom: 'Ignoring disconfirming evidence',
-      line: 'Did you know peanut allergies exploded in the U.S. because doctors told parents to avoid peanuts, with zero evidence behind it?',
+      line: 'Did you know that doctors in the 2000s caused an allergy epidemic with their bad advice?',
       screens: [
         { img:'case2-hero.jpg', lead:true, btn:'Reveal Your Case',
-          html:'The most cautious advice in modern medicine helped create an epidemic.' },
+          html:'In 2000, the advice of doctors caused a nationwide epidemic.' },
         { img:'case2-committee.jpg', btn:'What Happened Next',
-          html:'In 2000, America’s most trusted pediatricians faced a frightening question: why were a handful of children suddenly dying from peanuts? They had almost no research to go on, so the committee reached for the safest-sounding answer available. Keep peanuts away from babies until age 3. They called it &ldquo;an abundance of caution.&rdquo;' },
+          html:'In 2000, America\u2019s pediatricians wanted to tackle peanut allergies, which killed a small number of children each year. They had almost no research to go on, so the committee reached for the safest-sounding answer available. Keep peanuts away from babies until age 3.' },
         { btn:'Did Anyone See It Coming?',
-          html:'Everyone fell in line. Parents, daycares, schools, and airlines pulled peanuts out of the first three years of American childhood. And over the next decade, peanut allergy in U.S. children <strong>more than tripled.</strong>' },
+          html:'Everyone fell in line. Parents, daycares, schools, and airlines pulled peanuts out of the first three years of American childhood. And over the next decade, peanut allergy in U.S. children <strong>more than tripled.</strong> It turns out keeping peanuts away from kids actually causes peanut allergy!' },
         { img:'case2-bamba.jpg', btn:'How Did It End?',
-          html:'Yes, and the evidence was sitting in plain sight. Israeli babies were eating a peanut puff called Bamba before their first birthday, and had roughly <strong>one-tenth</strong> the peanut allergy rate of nearly identical children in Britain. But the committee had already committed. Through <strong>ignoring disconfirming evidence</strong>, the guideline stood for eight more years.' },
+          html:'At the same time, doctors ignored evidence from around the world that in nations where children ate peanuts regularly, there was almost no peanut allergy. For example, rates of peanut allergy were <strong>10 times lower</strong> in Israel, where babies commonly ate a peanut cereal called Bamba. While <strong>ignoring disconfirming evidence</strong>, doctors continued to warn parents to keep peanuts away from their children.' },
         { btn:'Now Find Your Group',
-          html:'In 2015 the decisive trial landed: feeding babies peanuts <em>early</em> cut their odds of peanut allergy by <strong>81%</strong>. Today’s official advice is the exact reverse of the 2000 advice. Start peanuts at 4 to 6 months. An entire generation got the opposite of what it needed, because a committee of experts was more afraid of peanuts than of being wrong.' }
+          html:'By 2015, the science was clear: feeding babies peanuts early cut their odds of peanut allergy by <strong>81%</strong>. Today\u2019s official advice is the exact reverse of the 2000 advice. Start peanuts at 4 to 6 months. An entire generation got the opposite of what it needed, because doctors were more afraid of peanuts than of being wrong.' }
       ]
     },
     {
       n: 3,
-      title: 'Volkswagen’s cheating software, 2008 to 2015',
+      title: 'Volkswagen\u2019s cheating software, 2008 to 2015',
       symptom: 'Mindguards',
-      line: 'Did you know Volkswagen sold 11 million cars with software that could tell when it was being tested, and everyone inside who knew was told to keep quiet?',
+      line: 'Did you know Volkswagen cars used to pollute 40 times as much as other cars, but they hid it from the public?',
       screens: [
         { img:'case3-hero.jpg', lead:true, btn:'Reveal Your Case',
           html:'Volkswagen built a car smart enough to know when it was being watched.' },
         { img:'case3-lab.jpg', btn:'What Happened Next',
-          html:'Volkswagen had promised the world something that did not exist: a diesel engine that was cheap, powerful, and clean enough to pass California’s strictest-in-the-world emissions standards. Their engineers tried. They could not build it. And the deadline was coming.' },
+          html:'Volkswagen had promised the world something that did not exist: a diesel engine that was cheap, powerful, and clean enough to pass California\u2019s strictest-in-the-world emissions standards. Their engineers tried. They could not build it. And the deadline was coming.' },
         { btn:'Nobody Inside Said Anything?',
-          html:'So they built something else. Hidden software that watched the steering wheel and the spinning tires, recognized the exact pattern of a lab emissions test, and switched the pollution controls <strong>on.</strong> Back out on a real road, it switched them <strong>off</strong>, releasing up to 40 times the legal limit of toxic nitrogen oxides.' },
+          html:'So they built something else. Hidden software that recognized when a car was being smog tested, and switched the pollution controls <strong>on.</strong> Back out on a real road, it switched them <strong>off</strong>, releasing up to 40 times the legal limit of toxic fumes.' },
         { img:'case3-silenced.jpg', btn:'So Who Finally Caught Them?',
-          html:'Hundreds of people inside VW knew. Their own supplier had even put a warning in writing, in 2007, that using this software in customer cars would be illegal. But at every level, managers acted as <strong>mindguards</strong>: engineers who raised the problem were told to fix it or stop talking, and the bad news never reached anyone with the power to end it. Nobody had to lie. The truth just never made it upstairs.' },
+          html:'Hundreds of people inside VW knew. But at every level, managers acted as <strong>mindguards</strong>, who kept engineers from talking about the issue. The truth just never made it to the bosses in charge.' },
         { img:'case3-roadtest.jpg', btn:'Now Find Your Group',
-          html:'11 million cars had already been sold. It fell apart in 2014, not because of a regulator, but because a tiny nonprofit spent about $50,000 to drive three cars down a real highway, in a study meant to <strong>prove</strong> clean diesel worked. Final cost: over $30 billion, the CEO’s job, and prison for engineers who were only doing what they were told.' }
+          html:'The scheme fell apart in 2014, after over <strong>11 million</strong> highly-polluting cars had been sold. After the courts had their way with the company, Volkswagen lost over $30 billion and the CEO was fired. Some of the engineers even went to prison!' }
       ]
     },
     {
       n: 4,
       title: 'The Mozart effect, 1993 to 2009',
       symptom: 'Illusion of invulnerability',
-      line: 'Did you know the whole "classical music makes babies smarter" thing came from a study of 36 college students and zero babies, and it still got written into state law?',
+      line: 'Did you know that the idea that classical music makes people smarter is a complete myth?',
       screens: [
         { img:'case4-hero.jpg', lead:true, btn:'Reveal Your Case',
-          html:'A study with no children in it changed how an entire generation of babies was raised.' },
+          html:'A whole generation of parents were fooled into thinking music would turn their babies into geniuses.' },
         { img:'case4-study.jpg', btn:'What Happened Next',
-          html:'In 1993, a one-page report found that college students who listened to ten minutes of Mozart did slightly better on a paper-folding puzzle, for about fifteen minutes afterward. That was the whole finding. <strong>36 students. One puzzle. A quarter of an hour.</strong>' },
+          html:'In 1993, a one-page report found that college students who listened to ten minutes of Mozart did slightly better on a paper-folding puzzle, compared to students who listened to no music. On the whole, it was an unremarkable finding with only a sample size of <strong>36 participants</strong>.' },
         { btn:'How Far Did It Go?',
-          html:'The media, politicians, and parenting experts all converged on something much bigger: <em>Mozart makes babies smarter.</em> Nobody slowed down to check the evidence, because nobody could picture a downside. It is just classical music. What is the harm?' },
-        { img:'case4-capitol.jpg', btn:'Was Any of It True?',
-          html:'That <strong>illusion of invulnerability</strong>, the group’s certainty that it simply could not be wrong, turned a 36-person study into public policy. In 1998 the governor of Georgia budgeted state money to mail a classical recording to the parents of every baby born in the state. Florida passed a law requiring classical music in programs for young children.' },
-        { img:'case4-videos.jpg', btn:'Now Find Your Group',
-          html:'Baby Einstein grew into a business worth hundreds of millions, and a generation of parents judged themselves by how much enrichment they piped into their infants. Meanwhile, replication after replication found almost nothing, just a tiny bump from any music you happen to enjoy. The original researchers kept insisting it was never about babies or IQ. By 2009, Disney was mailing refunds.' }
+          html:'For whatever reason, the media caught wind of the study and blew it way out of proportion. Headlines claimed Mozart can make you smarter! Soon, politicians and parenting experts piled onto the bandwagon, proclaiming that classical music can make children, and even babies, smarter.' },
+        { img:'case4-videos.jpg', btn:'Was Any of It True?',
+          html:'These claims grew and grew. By the late 90s, millions of CDs and DVDs featuring Mozart were being sold under the Baby Einstein brand. These were meant to be played to babies and children throughout the day to improve their IQ. This was due to an <strong>illusion of invulnerability</strong>, with parents believing that there\u2019s no way so many &ldquo;experts&rdquo; could be wrong.' },
+        { img:'case4-capitol.jpg', btn:'Now Find Your Group',
+          html:'By 1998, the governor of Georgia was mailing classical music CDs to parents of every baby born in the state. Florida passed a law requiring classical music in programs for young children. Of course, it turns out none of this had any real effect on children\u2019s IQs. The trend finally died out in the 2000s. By 2009, the company behind Baby Einstein agreed to issue refunds to parents for their false claims.' }
       ]
     }
   ];
@@ -285,19 +284,15 @@
     return m ? (+m[1] - 1) : -1;
   }
 
-  // Sticky for the tab, so an accidental refresh mid-activity does not hand
-  // the student a different case and break their group.
+  // A fresh draw on every page load. The only thing remembered is which case
+  // came up last, so a reload lands on a different one instead of repeating.
   function load(){
     var f = forced();
-    if (f >= 0) {
-      try { sessionStorage.setItem(KEY, f); } catch(e){}
-      return f;
-    }
-    try {
-      var v = sessionStorage.getItem(KEY);
-      if (v !== null && +v >= 0 && +v < CASES.length) return +v;
-    } catch(e){}
-    var i = pick();
+    if (f >= 0) return f;
+    var prev = -1;
+    try { prev = +sessionStorage.getItem(KEY); } catch(e){}
+    var i = pick(), guard = 0;
+    while (i === prev && guard++ < 8) i = pick();
     try { sessionStorage.setItem(KEY, i); } catch(e){}
     return i;
   }
@@ -390,16 +385,8 @@
   $('go-line').addEventListener('click',     function(){ show('s-line'); });
   $('back-number').addEventListener('click', function(){ show('s-number'); });
 
-  $('go-reveal').addEventListener('click', function(){
-    $('line-card').hidden = false;
-    $('back-number').hidden = false;
-    this.hidden = true;
-  });
-
-  $('restart').addEventListener('click', function(){
-    try { sessionStorage.removeItem(KEY); } catch(e){}
-    location.reload();
-  });
+  // KEY is left in place so the reload draws a different case
+  $('restart').addEventListener('click', function(){ location.reload(); });
 
 })();
 </script>
