@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plot Your Past Bosses: Leadership Grid</title>
+<!-- Empty icon so the browser does not request /favicon.ico (no network requests). -->
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    color-scheme: light;
+    --ink: #1b1f24;
+    --muted: #4f5661;
+    --line: #d3d8de;
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --accent: #1d4ed8;
+    --accent-dark: #1739a6;
+    --focus: #1d4ed8;
+    --error: #b42318;
+    --error-bg: #fdecea;
+    --b1: #0072B2;
+    --b1-ink: #ffffff;
+    --b2: #E69F00;
+    --b2-ink: #111111;
+    --b3: #6A3D9A;
+    --b3-ink: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .wrap {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 16px 16px 56px;
+  }
+
+  h1, h2, h3 { line-height: 1.25; margin: 0; }
+  h1 { font-size: 1.15rem; font-weight: 700; color: var(--muted); letter-spacing: 0.01em; }
+  h2 { font-size: 1.45rem; margin-bottom: 12px; }
+  h3 { font-size: 1.1rem; }
+  p { margin: 0 0 12px; }
+  [hidden] { display: none !important; }
+  h2:focus, h3:focus { outline: none; }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Header and progress ---------- */
+  .top { margin-bottom: 14px; }
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin: 6px 0 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .steps { display: flex; gap: 6px; }
+  .steps span {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--line);
+  }
+  .steps span.on { background: var(--accent); }
+
+  /* ---------- Cards and buttons ---------- */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 18px;
+    margin-bottom: 16px;
+  }
+
+  .btn {
+    appearance: none;
+    font: inherit;
+    font-weight: 700;
+    min-height: 48px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn.secondary { background: #fff; color: var(--accent); }
+  .btn.secondary:hover { background: #eef2ff; }
+  .btn.danger { background: var(--error); border-color: var(--error); }
+  .btn.danger:hover { background: #8f1c13; border-color: #8f1c13; }
+  .btn:disabled,
+  .btn:disabled:hover {
+    background: #c9ced6;
+    border-color: #c9ced6;
+    color: #4a515b;
+    cursor: not-allowed;
+  }
+
+  .nav {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+  }
+  .nav .btn { flex: 1; }
+  .nav .btn.secondary { flex: 0 0 auto; }
+
+  .marker-chip { flex: 0 0 auto; display: inline-block; vertical-align: middle; }
+
+  /* ---------- Screen 1: names ---------- */
+  .name-field { margin-top: 16px; }
+  .name-field label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .name-field input {
+    width: 100%;
+    font: inherit;
+    font-size: 1.05rem;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 2px solid #868e98;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+  }
+  .name-field input::placeholder { color: #6b7280; }
+  .name-field input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .name-field input[aria-invalid="true"] { border-color: var(--error); }
+  .field-error {
+    color: var(--error);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 6px 0 0;
+  }
+  .char-hint { font-size: 0.85rem; color: var(--muted); margin: 4px 0 0; }
+
+  /* ---------- Screen 2: survey ---------- */
+  .q-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+  }
+  .q-bar { height: 4px; background: var(--line); border-radius: 2px; margin-bottom: 14px; overflow: hidden; }
+  .q-bar span { display: block; height: 100%; background: var(--accent); }
+
+  .instructions {
+    background: #eef2ff;
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+  }
+  .instructions.short { font-size: 0.92rem; padding: 6px 10px; }
+
+  .q-text { font-size: 1.3rem; margin-bottom: 12px; }
+  .q-text .stem { display: block; font-size: 1rem; font-weight: 600; color: var(--muted); margin-bottom: 2px; }
+
+  .key {
+    list-style: none;
+    margin: 0 0 6px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .key b { color: var(--ink); }
+
+  fieldset.rate {
+    border: 0;
+    margin: 0;
+    padding: 14px 0 12px;
+    border-top: 1px solid var(--line);
+    min-width: 0;
+  }
+  fieldset.rate legend {
+    float: left;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  fieldset.rate legend span.who { display: flex; align-items: center; gap: 8px; overflow-wrap: anywhere; }
+  .scale {
+    clear: both;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(44px, 1fr));
+    gap: 8px;
+  }
+  .opt { position: relative; display: block; text-align: center; cursor: pointer; }
+  .opt input {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 52px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .opt .face {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    border: 2px solid #868e98;
+    border-radius: 10px;
+    background: #fff;
+    font-weight: 700;
+    font-size: 1.15rem;
+  }
+  .opt:hover .face { border-color: var(--ink); }
+  .opt input:checked + .face {
+    background: var(--c);
+    color: var(--c-ink);
+    border-color: #1b1f24;
+    box-shadow: inset 0 0 0 2px #fff;
+  }
+  .opt input:focus-visible + .face { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .opt .anchor { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 3px; min-height: 1.2em; }
+
+  .next-hint { font-size: 0.9rem; color: var(--muted); margin: 10px 0 0; text-align: right; }
+
+  /* ---------- Screen 3: results ---------- */
+  .grid-figure { margin: 0 0 16px; }
+  .grid-box {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 2px;
+    overflow: hidden;
+  }
+  .grid-box svg { display: block; width: 100%; height: auto; }
+  .grid-figure figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 8px; }
+
+  .boss-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 8px solid var(--c);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .boss-card h3 { display: flex; align-items: center; gap: 10px; overflow-wrap: anywhere; }
+  .boss-card .scores { font-weight: 700; font-size: 1.05rem; margin: 8px 0 2px; }
+  .boss-card .quad { font-weight: 700; color: var(--accent-dark); margin: 0 0 4px; }
+  .boss-card .desc { margin: 0; color: var(--ink); }
+  .boss-card ul.desc { padding-left: 20px; margin: 4px 0 0; }
+
+  .tophat {
+    background: #fff8e6;
+    border: 2px solid #b7791f;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 18px 0;
+  }
+  .tophat h3 { margin-bottom: 6px; }
+  .tophat p:last-child { margin-bottom: 0; }
+
+  details.calc {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0 16px;
+    margin-bottom: 18px;
+  }
+  details.calc summary {
+    cursor: pointer;
+    font-weight: 700;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+  details.calc[open] { padding-bottom: 14px; }
+  .formula {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    background: var(--bg);
+    padding: 8px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .calc-boss { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; }
+  .calc-boss h4 { margin: 0 0 4px; display: flex; align-items: center; gap: 8px; font-size: 1rem; overflow-wrap: anywhere; }
+  .calc-boss p { margin: 0; }
+
+  .confirm {
+    background: var(--error-bg);
+    border: 2px solid var(--error);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 12px;
+  }
+  .confirm .nav { margin-top: 10px; flex-wrap: wrap; }
+  .confirm .nav .btn { flex: 1 1 auto; }
+
+  /* ---------- Instructor grid view ---------- */
+  .export-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+  .export-row .btn { flex: 1 1 160px; }
+  .small { font-size: 0.9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top" id="app-header">
+    <h1>Plot Your Past Bosses</h1>
+    <div class="progress-row">
+      <span id="step-label" aria-live="polite">Step 1 of 3: Name your bosses</span>
+    </div>
+    <div class="steps" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
+  </header>
+
+  <main>
+    <!-- ================= Screen 1: names ================= -->
+    <section id="screen-names" aria-labelledby="names-h">
+      <div class="card">
+        <h2 id="names-h" tabindex="-1">Name your three bosses</h2>
+        <p>Think of three people who have been in charge of your work. A "boss" can be a shift manager, a coach, a group project leader, a club officer, a supervisor at a volunteer job, or a family member who ran a business you worked in. If you can, pick three people who were noticeably different from each other.</p>
+        <p>Use a nickname or initials (for example, "Coach D" or "Taco Bell manager"), not a full name. You'll be talking about these people with classmates.</p>
+
+        <form id="names-form" novalidate>
+          <div id="name-fields"></div>
+          <div class="nav">
+            <button type="submit" class="btn" id="start-btn">Start the survey</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= Screen 2: survey ================= -->
+    <section id="screen-survey" aria-labelledby="q-text" hidden>
+      <div class="card">
+        <div class="q-meta">
+          <span id="q-count">Question 1 of 8</span>
+        </div>
+        <div class="q-bar" aria-hidden="true"><span id="q-bar-fill" style="width:12.5%"></span></div>
+
+        <div class="instructions" id="instructions"></div>
+
+        <h2 class="q-text" id="q-text" tabindex="-1"></h2>
+
+        <ul class="key" aria-label="Response key">
+          <li><b>1</b> = Never</li>
+          <li><b>2</b> = Rarely</li>
+          <li><b>3</b> = Sometimes</li>
+          <li><b>4</b> = Often</li>
+          <li><b>5</b> = Always</li>
+        </ul>
+
+        <div id="rate-rows"></div>
+
+        <div class="nav">
+          <button type="button" class="btn secondary" id="back-btn">Back</button>
+          <button type="button" class="btn" id="next-btn" aria-describedby="next-hint">Next</button>
+        </div>
+        <p class="next-hint" id="next-hint">Rate all three bosses to continue.</p>
+      </div>
+    </section>
+
+    <!-- ================= Screen 3: results ================= -->
+    <section id="screen-results" aria-labelledby="results-h" hidden>
+      <h2 id="results-h" tabindex="-1">Where your bosses land on the Leadership Grid</h2>
+
+      <figure class="grid-figure">
+        <div class="grid-box" id="results-grid"></div>
+        <figcaption id="grid-caption"></figcaption>
+      </figure>
+
+      <div id="boss-cards"></div>
+
+      <aside class="tophat" aria-labelledby="tophat-h">
+        <h3 id="tophat-h">Now plot them in Top Hat</h3>
+        <p>Next, open Top Hat. You'll see the same grid there. Click where each of your bosses landed, using the gridlines and the scores above to match the spot. Blake and Mouton write positions as (task, relationship), so a boss at Task 7, Relationship 3 goes 7 across and 3 up.</p>
+      </aside>
+
+      <details class="calc">
+        <summary>How these scores were calculated</summary>
+        <div id="calc-body"></div>
+      </details>
+
+      <div class="nav">
+        <button type="button" class="btn secondary" id="results-back-btn">Back</button>
+        <button type="button" class="btn secondary" id="start-over-btn" aria-expanded="false" aria-controls="confirm-box">Start over</button>
+      </div>
+
+      <div class="confirm" id="confirm-box" role="group" aria-labelledby="confirm-h" hidden>
+        <h3 id="confirm-h" tabindex="-1">Start over?</h3>
+        <p>This clears all three names and every answer. You can't undo it.</p>
+        <div class="nav">
+          <button type="button" class="btn danger" id="confirm-yes">Yes, clear everything</button>
+          <button type="button" class="btn secondary" id="confirm-no">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Instructor view (index.html?grid) ================= -->
+    <section id="screen-grid" aria-labelledby="grid-h" hidden>
+      <div class="card">
+        <h2 id="grid-h">Blank Leadership Grid</h2>
+        <p class="small">Instructor view. This is the same grid students see on their results screen, drawn by the same code, with no markers. Upload the image to a Top Hat click-on-target question.</p>
+        <div class="grid-box" id="blank-grid"></div>
+        <div class="export-row">
+          <button type="button" class="btn" id="dl-svg">Download SVG</button>
+          <button type="button" class="btn" id="dl-png">Download PNG</button>
+        </div>
+        <p class="small" style="margin-top:10px">The PNG is 2000 x 2000 pixels. The SVG stays sharp at any size.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!--
+  Shared grid drawing code. The in-app results grid, the ?grid instructor view,
+  and the exported blank-grid.svg / blank-grid.png all come from LG.draw(), so
+  they are identical. Keep this block free of DOM access: README.md explains how
+  to run it outside the browser.
+-->
+<script id="grid-lib">
+var LG = (function () {
+  'use strict';
+
+  // Geometry, in viewBox units. The whole image is 1000 x 1000 and the plot is
+  // an 810 x 810 square. Both axes run 0.5 to 9.5, so 1 unit = 90 units and the
+  // midpoint (5) is the exact center of the plot.
+  var VB = 1000;
+  var X0 = 150;          // left edge of plot
+  var Y0 = 40;           // top edge of plot
+  var S = 810;           // plot size
+  var LO = 0.5, HI = 9.5;
+  var FONT = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+  var INK = '#1b1f24';
+  var MUTED = '#565e68';
+  var GRIDLINE = '#c9ced5';
+  var MARK_R = 42;       // keep-out radius around a marker, for nudging and labels
+
+  var QUADS = [
+    { text: '“Country Club” Leader', x: 2.75, top: true },
+    { text: 'Team Leader', x: 7.25, top: true },
+    { text: 'Impoverished Leader', x: 2.75, top: false },
+    { text: 'Authoritarian Leader', x: 7.25, top: false }
+  ];
+
+  function gx(v) { return X0 + (v - LO) / (HI - LO) * S; }
+  function gy(v) { return Y0 + S - (v - LO) / (HI - LO) * S; }
+  function r2(v) { return Math.round(v * 100) / 100; }
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // One marker (circle, square, or triangle) with its number, centered at cx, cy.
+  function markerShape(m, cx, cy) {
+    var stroke = ' stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"';
+    var shape, ty = cy + 10.5, fs = 30;
+    if (m.shape === 'square') {
+      var h = 27;
+      shape = '<rect x="' + r2(cx - h) + '" y="' + r2(cy - h) + '" width="' + (2 * h) + '" height="' + (2 * h) +
+        '" rx="4" fill="' + m.color + '"' + stroke + '/>';
+    } else if (m.shape === 'triangle') {
+      var R = 40;
+      var pts = [
+        [cx, cy - R],
+        [cx + R * Math.cos(Math.PI / 6), cy + R / 2],
+        [cx - R * Math.cos(Math.PI / 6), cy + R / 2]
+      ].map(function (p) { return r2(p[0]) + ',' + r2(p[1]); }).join(' ');
+      shape = '<polygon points="' + pts + '" fill="' + m.color + '"' + stroke + '/>';
+      ty = cy + 14; fs = 26;
+    } else {
+      shape = '<circle cx="' + r2(cx) + '" cy="' + r2(cy) + '" r="30" fill="' + m.color + '"' + stroke + '/>';
+    }
+    return shape +
+      '<text x="' + r2(cx) + '" y="' + r2(ty) + '" text-anchor="middle" font-size="' + fs +
+      '" font-weight="700" fill="' + m.ink + '">' + esc(m.num) + '</text>';
+  }
+
+  // Small standalone marker for use next to names in the page.
+  function chip(m, size) {
+    size = size || 28;
+    return '<svg class="marker-chip" width="' + size + '" height="' + size +
+      '" viewBox="-40 -40 80 80" aria-hidden="true" focusable="false" font-family="' + FONT + '">' +
+      markerShape(m, 0, 0) + '</svg>';
+  }
+
+  // Spread out markers that sit on top of each other so all stay visible.
+  function layoutMarkers(markers) {
+    var pts = markers.map(function (m) {
+      return { x: gx(m.x), y: gy(m.y), tx: gx(m.x), ty: gy(m.y) };
+    });
+    var SEED = [[-1, 0.6], [1, 0.6], [0, -1]];
+    pts.forEach(function (p, i) {
+      var clash = pts.some(function (q, j) {
+        return j !== i && Math.abs(q.tx - p.tx) < 1 && Math.abs(q.ty - p.ty) < 1;
+      });
+      if (clash) { var s = SEED[i % 3]; p.x += s[0]; p.y += s[1]; }
+    });
+    var MIN = 2 * MARK_R - 4;
+    var lo = X0 + MARK_R, hiX = X0 + S - MARK_R, top = Y0 + MARK_R, bot = Y0 + S - MARK_R;
+    for (var iter = 0; iter < 400; iter++) {
+      var moved = false;
+      for (var i = 0; i < pts.length; i++) {
+        for (var j = i + 1; j < pts.length; j++) {
+          var dx = pts[j].x - pts[i].x, dy = pts[j].y - pts[i].y;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          if (d < MIN - 0.01) {
+            if (d < 1e-6) { dx = 1; dy = 0; d = 1; }
+            var push = (MIN - d) / 2 + 0.2;
+            pts[i].x -= dx / d * push; pts[i].y -= dy / d * push;
+            pts[j].x += dx / d * push; pts[j].y += dy / d * push;
+            moved = true;
+          }
+        }
+      }
+      pts.forEach(function (p) {
+        p.x = Math.min(hiX, Math.max(lo, p.x));
+        p.y = Math.min(bot, Math.max(top, p.y));
+      });
+      if (!moved) break;
+    }
+    return pts;
+  }
+
+  // Place each name label next to its marker without covering other labels or markers.
+  function layoutLabels(markers, pts) {
+    var FS = 34, CW = 0.6 * FS;
+    var markerBoxes = pts.map(function (p) {
+      return [p.x - MARK_R, p.y - MARK_R, p.x + MARK_R, p.y + MARK_R];
+    });
+    var bounds = [X0 + 4, Y0 + 4, X0 + S - 4, Y0 + S - 4];
+    // Things a label should avoid covering: the quadrant labels and the heavy lines at 5.
+    var QW = 0.56 * 32;
+    var soft = QUADS.map(function (q) {
+      var w = q.text.length * QW, cx = gx(q.x), base = q.top ? Y0 + 38 : Y0 + S - 16;
+      return [cx - w / 2, base - 26, cx + w / 2, base + 8];
+    });
+    soft.push([gx(5) - 4, Y0, gx(5) + 4, Y0 + S]);
+    soft.push([X0, gy(5) - 4, X0 + S, gy(5) + 4]);
+
+    function overlap(a, b) {
+      var w = Math.min(a[2], b[2]) - Math.max(a[0], b[0]);
+      var h = Math.min(a[3], b[3]) - Math.max(a[1], b[1]);
+      return (w > 0 && h > 0) ? w * h : 0;
+    }
+    function outside(b) {
+      var inside = overlap(b, bounds);
+      return (b[2] - b[0]) * (b[3] - b[1]) - inside;
+    }
+
+    // Candidate spots for each label: beside the marker (level, or stepped up or
+    // down so labels can stack), and centered above or below it. Each candidate
+    // gets a cost for leaving the plot, covering another marker, covering the
+    // quadrant labels or center lines, and sitting far from its own marker.
+    var cands = markers.map(function (m, i) {
+      var p = pts[i], g = MARK_R + 8;
+      var w = String(m.name).length * CW;
+      var list = [];
+      [0, -1, 1, -2, 2].forEach(function (step) {
+        var y = p.y + 11 + step * (FS + 6);
+        var dx = step === 0 ? 0 : -6;
+        list.push({ a: 'start', x: p.x + g + dx, y: y, dist: Math.abs(step) });
+        list.push({ a: 'end', x: p.x - g - dx, y: y, dist: Math.abs(step) });
+      });
+      list.push({ a: 'middle', x: p.x, y: p.y - g - 4, dist: 0.5 });
+      list.push({ a: 'middle', x: p.x, y: p.y + g + 26, dist: 0.5 });
+      list.forEach(function (c) {
+        var left = c.a === 'start' ? c.x : (c.a === 'end' ? c.x - w : c.x - w / 2);
+        c.box = [left - 4, c.y - FS * 0.8, left + w + 4, c.y + FS * 0.28];
+        var cost = outside(c.box) * 6 + c.dist * 400;
+        markerBoxes.forEach(function (b, k) { if (k !== i) cost += overlap(c.box, b) * 8; });
+        soft.forEach(function (b) { cost += overlap(c.box, b) * 1; });
+        c.cost = cost;
+      });
+      return list;
+    });
+
+    // Try every combination (at most 12 x 12 x 12) and keep the cheapest,
+    // counting label-on-label overlap heavily.
+    var best = null, bestCost = Infinity, pick = [];
+    (function search(i, cost) {
+      if (cost >= bestCost) return;
+      if (i === cands.length) { bestCost = cost; best = pick.slice(); return; }
+      cands[i].forEach(function (c) {
+        var extra = c.cost;
+        for (var k = 0; k < i; k++) extra += overlap(c.box, pick[k].box) * 10;
+        pick[i] = c;
+        search(i + 1, cost + extra);
+      });
+    })(0, 0);
+    return best;
+  }
+
+  // Main drawing function.
+  // opts.markers: [{ x: task 1-9, y: relationship 1-9, shape, color, ink, num, name }]
+  // opts.pixelSize: width and height attributes (default 1000)
+  // opts.title / opts.desc: accessible name and description
+  function draw(opts) {
+    opts = opts || {};
+    var markers = opts.markers || [];
+    var px = opts.pixelSize || VB;
+    var id = opts.idPrefix || 'lg';
+    var title = opts.title || 'Leadership Grid';
+    var desc = opts.desc || 'Blank Leadership Grid. Task-focus runs along the bottom from 1 (low) to 9 (high). ' +
+      'Relationship-focus runs up the side from 1 (low) to 9 (high). Heavier lines at 5 divide four quadrants: ' +
+      'Country Club Leader top left, Team Leader top right, Impoverished Leader bottom left, Authoritarian Leader bottom right.';
+    var o = [];
+    var v, x, y;
+
+    o.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + VB + ' ' + VB + '" width="' + px + '" height="' + px +
+      '" role="img" aria-labelledby="' + id + '-title ' + id + '-desc" font-family="' + FONT + '">');
+    o.push('<title id="' + id + '-title">' + esc(title) + '</title>');
+    o.push('<desc id="' + id + '-desc">' + esc(desc) + '</desc>');
+    o.push('<rect x="0" y="0" width="' + VB + '" height="' + VB + '" fill="#ffffff"/>');
+
+    // Light gridlines at every integer except 5.
+    o.push('<g stroke="' + GRIDLINE + '" stroke-width="2">');
+    for (v = 1; v <= 9; v++) {
+      if (v === 5) continue;
+      x = gx(v); y = gy(v);
+      o.push('<line x1="' + x + '" y1="' + Y0 + '" x2="' + x + '" y2="' + (Y0 + S) + '"/>');
+      o.push('<line x1="' + X0 + '" y1="' + y + '" x2="' + (X0 + S) + '" y2="' + y + '"/>');
+    }
+    o.push('</g>');
+
+    // Tick marks outside the plot.
+    o.push('<g stroke="' + INK + '" stroke-width="2">');
+    for (v = 1; v <= 9; v++) {
+      x = gx(v); y = gy(v);
+      o.push('<line x1="' + x + '" y1="' + (Y0 + S) + '" x2="' + x + '" y2="' + (Y0 + S + 10) + '"/>');
+      o.push('<line x1="' + (X0 - 10) + '" y1="' + y + '" x2="' + X0 + '" y2="' + y + '"/>');
+    }
+    o.push('</g>');
+
+    // Quadrant labels (drawn under the heavy lines and markers).
+    o.push('<g font-size="32" font-weight="600" fill="' + MUTED + '" text-anchor="middle" ' +
+      'stroke="#ffffff" stroke-width="7" stroke-linejoin="round" paint-order="stroke">');
+    QUADS.forEach(function (q) {
+      var qy = q.top ? Y0 + 38 : Y0 + S - 16;
+      o.push('<text x="' + gx(q.x) + '" y="' + qy + '">' + esc(q.text) + '</text>');
+    });
+    o.push('</g>');
+
+    // Heavy quadrant dividers at 5, and the plot border.
+    o.push('<g stroke="' + INK + '" stroke-width="5">');
+    o.push('<line x1="' + gx(5) + '" y1="' + Y0 + '" x2="' + gx(5) + '" y2="' + (Y0 + S) + '"/>');
+    o.push('<line x1="' + X0 + '" y1="' + gy(5) + '" x2="' + (X0 + S) + '" y2="' + gy(5) + '"/>');
+    o.push('</g>');
+    o.push('<rect x="' + X0 + '" y="' + Y0 + '" width="' + S + '" height="' + S +
+      '" fill="none" stroke="' + INK + '" stroke-width="3"/>');
+
+    // Tick labels.
+    o.push('<g font-size="40" fill="' + INK + '">');
+    for (v = 1; v <= 9; v++) {
+      o.push('<text x="' + gx(v) + '" y="' + (Y0 + S + 50) + '" text-anchor="middle">' + v + '</text>');
+      o.push('<text x="' + (X0 - 18) + '" y="' + (gy(v) + 14) + '" text-anchor="end">' + v + '</text>');
+    }
+    o.push('</g>');
+
+    // Axis titles with Low / High at the ends.
+    var axY = Y0 + S + 114;
+    o.push('<text x="' + X0 + '" y="' + axY + '" font-size="32" fill="' + MUTED + '" text-anchor="start">Low</text>');
+    o.push('<text x="' + gx(5) + '" y="' + axY + '" font-size="40" font-weight="700" fill="' + INK + '" text-anchor="middle">Task-focus</text>');
+    o.push('<text x="' + (X0 + S) + '" y="' + axY + '" font-size="32" fill="' + MUTED + '" text-anchor="end">High</text>');
+    var axX = X0 - 64;
+    o.push('<text transform="rotate(-90 ' + axX + ' ' + (Y0 + S) + ')" x="' + axX + '" y="' + (Y0 + S) +
+      '" font-size="32" fill="' + MUTED + '" text-anchor="start">Low</text>');
+    o.push('<text transform="rotate(-90 ' + axX + ' ' + gy(5) + ')" x="' + axX + '" y="' + gy(5) +
+      '" font-size="40" font-weight="700" fill="' + INK + '" text-anchor="middle">Relationship-focus</text>');
+    o.push('<text transform="rotate(-90 ' + axX + ' ' + Y0 + ')" x="' + axX + '" y="' + Y0 +
+      '" font-size="32" fill="' + MUTED + '" text-anchor="end">High</text>');
+
+    // Markers.
+    draw.nudged = false;
+    if (markers.length) {
+      var pts = layoutMarkers(markers);
+      var labels = layoutLabels(markers, pts);
+
+      // Where a marker had to be nudged, a thin line points back to its exact spot.
+      pts.forEach(function (p) {
+        if (Math.abs(p.x - p.tx) > 2 || Math.abs(p.y - p.ty) > 2) {
+          draw.nudged = true;
+          o.push('<line x1="' + r2(p.tx) + '" y1="' + r2(p.ty) + '" x2="' + r2(p.x) + '" y2="' + r2(p.y) +
+            '" stroke="' + INK + '" stroke-width="2.5"/>');
+        }
+      });
+      pts.forEach(function (p) {
+        if (Math.abs(p.x - p.tx) > 2 || Math.abs(p.y - p.ty) > 2) {
+          o.push('<circle cx="' + r2(p.tx) + '" cy="' + r2(p.ty) + '" r="6" fill="' + INK + '"/>');
+        }
+      });
+      // A label that had to step away from its marker gets a thin leader line.
+      labels.forEach(function (c, i) {
+        if (c.dist < 1) return;
+        var p = pts[i], b = c.box;
+        var nx = Math.min(b[2], Math.max(b[0], p.x)), ny = Math.min(b[3], Math.max(b[1], p.y));
+        var dx = nx - p.x, dy = ny - p.y, d = Math.sqrt(dx * dx + dy * dy);
+        if (d < MARK_R + 4) return;
+        o.push('<line x1="' + r2(p.x + dx / d * (MARK_R - 6)) + '" y1="' + r2(p.y + dy / d * (MARK_R - 6)) +
+          '" x2="' + r2(nx) + '" y2="' + r2(ny) + '" stroke="' + MUTED + '" stroke-width="2.5"/>');
+      });
+      markers.forEach(function (m, i) { o.push(markerShape(m, pts[i].x, pts[i].y)); });
+
+      o.push('<g font-size="34" font-weight="700" fill="' + INK + '" stroke="#ffffff" stroke-width="12" ' +
+        'stroke-linejoin="round" paint-order="stroke">');
+      markers.forEach(function (m, i) {
+        var c = labels[i];
+        o.push('<text x="' + r2(c.x) + '" y="' + r2(c.y) + '" text-anchor="' + c.a + '">' + esc(m.name) + '</text>');
+      });
+      o.push('</g>');
+    }
+
+    o.push('</svg>');
+    return o.join('');
+  }
+
+  return { draw: draw, chip: chip };
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORE_KEY = 'psy170-leadership-grid-v1';
+
+  var ITEMS = [
+    { id: 'R1', dim: 'R', text: 'ask how you were doing, beyond just the work?' },
+    { id: 'T1', dim: 'T', text: 'make it clear exactly what you were supposed to do?' },
+    { id: 'R2', dim: 'R', text: 'ask for your input before making a decision that affected you?' },
+    { id: 'T2', dim: 'T', text: 'set deadlines or schedules and expect people to stick to them?' },
+    { id: 'R3', dim: 'R', text: 'work with you when something came up in your personal life (a schedule conflict, a rough week)?' },
+    { id: 'T3', dim: 'T', text: 'assign specific tasks or roles to specific people?' },
+    { id: 'R4', dim: 'R', text: 'thank you or recognize you when you did good work?' },
+    { id: 'T4', dim: 'T', text: 'follow up to check that the work was done correctly?' }
+  ];
+  var STEM = 'How often did this person';
+  var ANCHORS = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'];
+
+  var BOSSES = [
+    { num: 1, shape: 'circle', color: '#0072B2', ink: '#ffffff', placeholder: 'e.g., Coach D' },
+    { num: 2, shape: 'square', color: '#E69F00', ink: '#111111', placeholder: 'e.g., Target manager' },
+    { num: 3, shape: 'triangle', color: '#6A3D9A', ink: '#ffffff', placeholder: 'e.g., Bio lab partner' }
+  ];
+
+  var QUAD_INFO = {
+    team: { label: 'Team Leader', desc: 'Sets clear expectations for the work and also invests in the people doing it.' },
+    auth: { label: 'Authoritarian Leader', desc: 'Focused on getting the work done, with little attention to people’s feelings or input.' },
+    club: { label: '“Country Club” Leader', desc: 'Focused on keeping people comfortable and happy, with less structure or direction about the work.' },
+    impov: { label: 'Impoverished Leader', desc: 'Puts in little effort on either the work or the people.' }
+  };
+
+  var STEP_LABELS = {
+    names: 'Step 1 of 3: Name your bosses',
+    survey: 'Step 2 of 3: Rate your bosses',
+    results: 'Step 3 of 3: See your results'
+  };
+
+  function $(id) { return document.getElementById(id); }
+
+  /* ---------------- State and storage ---------------- */
+
+  function freshState() {
+    var a = {};
+    ITEMS.forEach(function (it) { a[it.id] = [null, null, null]; });
+    return { names: ['', '', ''], answers: a, screen: 'names', q: 0 };
+  }
+
+  function loadState() {
+    var raw = null;
+    try { raw = window.sessionStorage.getItem(STORE_KEY); } catch (e) { return null; }
+    if (!raw) return null;
+    try {
+      var s = JSON.parse(raw);
+      var ok = s && Array.isArray(s.names) && s.names.length === 3 &&
+        s.names.every(function (n) { return typeof n === 'string'; }) &&
+        s.answers && typeof s.answers === 'object' &&
+        ITEMS.every(function (it) {
+          var a = s.answers[it.id];
+          return Array.isArray(a) && a.length === 3 && a.every(function (v) {
+            return v === null || (v >= 1 && v <= 5 && Math.floor(v) === v);
+          });
+        }) &&
+        (s.screen === 'names' || s.screen === 'survey' || s.screen === 'results') &&
+        typeof s.q === 'number' && s.q >= 0 && s.q < ITEMS.length && Math.floor(s.q) === s.q;
+      return ok ? s : null;
+    } catch (e) { return null; }
+  }
+
+  function saveState() {
+    try { window.sessionStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable: keep going */ }
+  }
+
+  function clearSaved() {
+    try { window.sessionStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+  }
+
+  var state = freshState();
+
+  function cleanName(s) { return String(s).replace(/\s+/g, ' ').trim(); }
+  function bossName(i) { return cleanName(state.names[i]); }
+
+  /* ---------------- Screen switching ---------------- */
+
+  function showScreen(name, moveFocus) {
+    ['names', 'survey', 'results'].forEach(function (s) {
+      $('screen-' + s).hidden = (s !== name);
+    });
+    state.screen = name;
+    saveState();
+
+    $('step-label').textContent = STEP_LABELS[name];
+    var idx = { names: 0, survey: 1, results: 2 }[name];
+    Array.prototype.forEach.call(document.querySelectorAll('.steps span'), function (el, i) {
+      el.classList.toggle('on', i <= idx);
+    });
+
+    if (name === 'names') renderNames();
+    if (name === 'survey') renderQuestion();
+    if (name === 'results') renderResults();
+
+    if (moveFocus) {
+      window.scrollTo(0, 0);
+      var target = { names: 'names-h', survey: 'q-text', results: 'results-h' }[name];
+      $(target).focus({ preventScroll: true });
+    }
+  }
+
+  /* ---------------- Screen 1: names ---------------- */
+
+  function buildNameFields() {
+    var wrap = $('name-fields');
+    wrap.innerHTML = '';
+    BOSSES.forEach(function (b, i) {
+      var field = document.createElement('div');
+      field.className = 'name-field';
+      field.innerHTML =
+        '<label for="name-' + i + '">' + LG.chip(b, 30) + '<span>Boss ' + b.num + '</span></label>' +
+        '<input id="name-' + i + '" type="text" maxlength="20" autocomplete="off" autocapitalize="words" ' +
+        'spellcheck="false" required aria-describedby="name-' + i + '-hint name-' + i + '-err">' +
+        '<p class="char-hint" id="name-' + i + '-hint">Up to 20 characters.</p>' +
+        '<p class="field-error" id="name-' + i + '-err" hidden></p>';
+      wrap.appendChild(field);
+      var input = field.querySelector('input');
+      input.placeholder = b.placeholder;
+      input.addEventListener('input', function () {
+        state.names[i] = input.value;
+        saveState();
+        setNameError(i, null);
+      });
+      input.addEventListener('blur', function () {
+        var t = cleanName(input.value);
+        if (t !== input.value) { input.value = t; state.names[i] = t; saveState(); }
+      });
+    });
+  }
+
+  function renderNames() {
+    BOSSES.forEach(function (b, i) {
+      var input = $('name-' + i);
+      if (input.value !== state.names[i]) input.value = state.names[i];
+      setNameError(i, null);
+    });
+  }
+
+  function setNameError(i, msg) {
+    var err = $('name-' + i + '-err');
+    var input = $('name-' + i);
+    if (msg) {
+      err.textContent = msg;
+      err.hidden = false;
+      input.setAttribute('aria-invalid', 'true');
+    } else {
+      err.textContent = '';
+      err.hidden = true;
+      input.removeAttribute('aria-invalid');
+    }
+  }
+
+  function validateNames() {
+    var t = state.names.map(cleanName);
+    var errs = [null, null, null];
+    t.forEach(function (v, i) {
+      if (!v) errs[i] = 'Please enter a name for Boss ' + (i + 1) + '.';
+    });
+    for (var i = 1; i < 3; i++) {
+      for (var j = 0; j < i; j++) {
+        if (!errs[i] && t[i] && t[j] && t[i].toLowerCase() === t[j].toLowerCase()) {
+          errs[i] = 'Boss ' + (i + 1) + ' has the same name as Boss ' + (j + 1) +
+            '. Add something to tell them apart, like "Coach D soccer" and "Coach D track".';
+          break;
+        }
+      }
+    }
+    return errs;
+  }
+
+  $('names-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    BOSSES.forEach(function (b, i) {
+      state.names[i] = cleanName($('name-' + i).value);
+      $('name-' + i).value = state.names[i];
+    });
+    saveState();
+    var errs = validateNames();
+    var first = -1;
+    errs.forEach(function (msg, i) {
+      setNameError(i, msg);
+      if (msg && first < 0) first = i;
+    });
+    if (first >= 0) { $('name-' + first).focus(); return; }
+    state.q = firstIncomplete();
+    if (state.q < 0) state.q = 0;
+    showScreen('survey', true);
+  });
+
+  /* ---------------- Screen 2: survey ---------------- */
+
+  function itemComplete(q) {
+    return state.answers[ITEMS[q].id].every(function (v) { return v !== null; });
+  }
+  function firstIncomplete() {
+    for (var q = 0; q < ITEMS.length; q++) if (!itemComplete(q)) return q;
+    return -1;
+  }
+
+  function renderQuestion() {
+    var q = state.q, it = ITEMS[q];
+    $('q-count').textContent = 'Question ' + (q + 1) + ' of ' + ITEMS.length;
+    $('q-bar-fill').style.width = ((q + 1) / ITEMS.length * 100) + '%';
+
+    var ins = $('instructions');
+    if (q === 0) {
+      ins.className = 'instructions';
+      ins.textContent = 'For each question, rate how often each person did this. If you’re not sure, go with your best guess.';
+    } else {
+      ins.className = 'instructions short';
+      ins.textContent = 'Rate how often each person did this. Best guess is fine.';
+    }
+
+    var qt = $('q-text');
+    qt.innerHTML = '';
+    var stem = document.createElement('span');
+    stem.className = 'stem';
+    stem.textContent = STEM + '…';
+    qt.appendChild(stem);
+    qt.appendChild(document.createTextNode(it.text));
+
+    var rows = $('rate-rows');
+    rows.innerHTML = '';
+    BOSSES.forEach(function (b, bi) {
+      var fs = document.createElement('fieldset');
+      fs.className = 'rate';
+      fs.style.setProperty('--c', b.color);
+      fs.style.setProperty('--c-ink', b.ink);
+
+      var lg = document.createElement('legend');
+      var who = document.createElement('span');
+      who.className = 'who';
+      who.innerHTML = LG.chip(b, 28);
+      var nm = document.createElement('span');
+      nm.textContent = bossName(bi);
+      who.appendChild(nm);
+      lg.appendChild(who);
+      fs.appendChild(lg);
+
+      var scale = document.createElement('div');
+      scale.className = 'scale';
+      for (var v = 1; v <= 5; v++) {
+        var lab = document.createElement('label');
+        lab.className = 'opt';
+        var inp = document.createElement('input');
+        inp.type = 'radio';
+        inp.name = 'q' + q + '-b' + bi;
+        inp.value = String(v);
+        inp.checked = state.answers[it.id][bi] === v;
+        inp.addEventListener('change', onRate);
+        inp.dataset.boss = String(bi);
+        var face = document.createElement('span');
+        face.className = 'face';
+        face.textContent = String(v);
+        var sr = document.createElement('span');
+        sr.className = 'visually-hidden';
+        sr.textContent = ' ' + ANCHORS[v - 1];
+        face.appendChild(sr);
+        var anchor = document.createElement('span');
+        anchor.className = 'anchor';
+        anchor.setAttribute('aria-hidden', 'true');
+        anchor.textContent = (v === 1 ? 'Never' : (v === 5 ? 'Always' : ''));
+        lab.appendChild(inp);
+        lab.appendChild(face);
+        lab.appendChild(anchor);
+        scale.appendChild(lab);
+      }
+      fs.appendChild(scale);
+      rows.appendChild(fs);
+    });
+
+    $('next-btn').textContent = (q === ITEMS.length - 1) ? 'See my results' : 'Next';
+    updateNext();
+  }
+
+  function onRate(e) {
+    var inp = e.target;
+    var bi = Number(inp.dataset.boss);
+    state.answers[ITEMS[state.q].id][bi] = Number(inp.value);
+    saveState();
+    updateNext();
+  }
+
+  function updateNext() {
+    var done = itemComplete(state.q);
+    $('next-btn').disabled = !done;
+    $('next-hint').hidden = done;
+  }
+
+  $('back-btn').addEventListener('click', function () {
+    if (state.q === 0) { showScreen('names', true); return; }
+    state.q -= 1;
+    saveState();
+    renderQuestion();
+    window.scrollTo(0, 0);
+    $('q-text').focus({ preventScroll: true });
+  });
+
+  $('next-btn').addEventListener('click', function () {
+    if (!itemComplete(state.q)) return;
+    if (state.q === ITEMS.length - 1) { showScreen('results', true); return; }
+    state.q += 1;
+    saveState();
+    renderQuestion();
+    window.scrollTo(0, 0);
+    $('q-text').focus({ preventScroll: true });
+  });
+
+  /* ---------------- Screen 3: results ---------------- */
+
+  function scoreBoss(bi) {
+    var rSum = 0, tSum = 0;
+    ITEMS.forEach(function (it) {
+      var v = state.answers[it.id][bi];
+      if (it.dim === 'R') rSum += v; else tSum += v;
+    });
+    // grid = 1 + 2 * (mean - 1), with mean = sum / 4. Written with sums so the
+    // result is exact (always a multiple of 0.5).
+    return {
+      relMean: rSum / 4,
+      taskMean: tSum / 4,
+      rel: 1 + (rSum - 4) / 2,
+      task: 1 + (tSum - 4) / 2
+    };
+  }
+
+  function classify(task, rel) {
+    if (task === 5 && rel === 5) {
+      return {
+        label: 'Right in the center of the grid, between all four styles.',
+        parts: null,
+        desc: 'This boss was right in the middle on both the work and the people, not clearly high or low on either.'
+      };
+    }
+    if (task === 5) {
+      var pair = rel > 5 ? ['club', 'team'] : ['impov', 'auth'];
+      return {
+        label: 'On the line between ' + QUAD_INFO[pair[1]].label + ' and ' + QUAD_INFO[pair[0]].label,
+        parts: pair.slice().reverse()
+      };
+    }
+    if (rel === 5) {
+      var pair2 = task > 5 ? ['team', 'auth'] : ['club', 'impov'];
+      return {
+        label: 'On the line between ' + QUAD_INFO[pair2[0]].label + ' and ' + QUAD_INFO[pair2[1]].label,
+        parts: pair2
+      };
+    }
+    var key = task > 5 ? (rel > 5 ? 'team' : 'auth') : (rel > 5 ? 'club' : 'impov');
+    return { label: QUAD_INFO[key].label, parts: null, desc: QUAD_INFO[key].desc };
+  }
+
+  function fmt1(v) { return v.toFixed(1); }
+  function fmt2(v) { return (Math.round(v * 100) / 100).toFixed(2); }
+
+  function renderResults() {
+    if (firstIncomplete() >= 0) {
+      state.q = firstIncomplete();
+      showScreen('survey', true);
+      return;
+    }
+
+    var data = BOSSES.map(function (b, i) {
+      var s = scoreBoss(i);
+      return {
+        b: b, name: bossName(i), s: s, c: classify(s.task, s.rel)
+      };
+    });
+
+    var desc = 'Your three bosses on the Leadership Grid. ' + data.map(function (d) {
+      return 'Boss ' + d.b.num + ', ' + d.name + ': Task ' + fmt1(d.s.task) + ', Relationship ' + fmt1(d.s.rel) + ', ' + d.c.label + '.';
+    }).join(' ');
+
+    $('results-grid').innerHTML = LG.draw({
+      idPrefix: 'res',
+      title: 'Where your bosses land on the Leadership Grid',
+      desc: desc,
+      markers: data.map(function (d) {
+        return { x: d.s.task, y: d.s.rel, shape: d.b.shape, color: d.b.color, ink: d.b.ink, num: d.b.num, name: d.name };
+      })
+    });
+
+    $('grid-caption').textContent = LG.draw.nudged
+      ? 'Some of your bosses landed in the same spot or very close together, so their markers are spread out a little. A dot and a short line show the exact spot. The scores below give the exact values.'
+      : 'Each boss has its own color, shape, and number. The scores below give the exact values.';
+
+    var cards = $('boss-cards');
+    cards.innerHTML = '';
+    data.forEach(function (d) {
+      var art = document.createElement('article');
+      art.className = 'boss-card';
+      art.style.setProperty('--c', d.b.color);
+
+      var h = document.createElement('h3');
+      h.innerHTML = LG.chip(d.b, 32);
+      var nm = document.createElement('span');
+      nm.textContent = d.name;
+      h.appendChild(nm);
+      art.appendChild(h);
+
+      var sc = document.createElement('p');
+      sc.className = 'scores';
+      sc.textContent = 'Task ' + fmt1(d.s.task) + ', Relationship ' + fmt1(d.s.rel);
+      art.appendChild(sc);
+
+      var ql = document.createElement('p');
+      ql.className = 'quad';
+      ql.textContent = d.c.label;
+      art.appendChild(ql);
+
+      if (d.c.parts) {
+        var intro = document.createElement('p');
+        intro.className = 'desc';
+        intro.textContent = 'This boss shares features of both styles:';
+        art.appendChild(intro);
+        var ul = document.createElement('ul');
+        ul.className = 'desc';
+        d.c.parts.forEach(function (k) {
+          var li = document.createElement('li');
+          var strong = document.createElement('strong');
+          strong.textContent = QUAD_INFO[k].label + ': ';
+          li.appendChild(strong);
+          li.appendChild(document.createTextNode(QUAD_INFO[k].desc));
+          ul.appendChild(li);
+        });
+        art.appendChild(ul);
+      } else {
+        var p = document.createElement('p');
+        p.className = 'desc';
+        p.textContent = d.c.desc;
+        art.appendChild(p);
+      }
+      cards.appendChild(art);
+    });
+
+    var body = $('calc-body');
+    body.innerHTML =
+      '<p>Each boss got two averages on the 1 to 5 answer scale:</p>' +
+      '<ul><li><strong>Relationship score:</strong> the average of questions 1, 3, 5, and 7.</li>' +
+      '<li><strong>Task score:</strong> the average of questions 2, 4, 6, and 8.</li></ul>' +
+      '<p>Each average was then converted to Blake and Mouton’s 1 to 9 grid:</p>' +
+      '<p><span class="formula">grid score = 1 + 2 × (average - 1)</span></p>' +
+      '<p>So an average of 1 becomes 1, an average of 3 becomes 5, and an average of 5 becomes 9.</p>' +
+      '<p>The relationship questions reflect what researchers call <em>consideration</em>, and the task questions reflect <em>initiating structure</em>. These are the two leadership behaviors from the Ohio State leadership studies.</p>';
+    data.forEach(function (d) {
+      var div = document.createElement('div');
+      div.className = 'calc-boss';
+      var h4 = document.createElement('h4');
+      h4.innerHTML = LG.chip(d.b, 24);
+      var nm = document.createElement('span');
+      nm.textContent = d.name;
+      h4.appendChild(nm);
+      div.appendChild(h4);
+      var p1 = document.createElement('p');
+      p1.textContent = 'Relationship average ' + fmt2(d.s.relMean) + ', which becomes ' + fmt1(d.s.rel) + ' on the grid.';
+      var p2 = document.createElement('p');
+      p2.textContent = 'Task average ' + fmt2(d.s.taskMean) + ', which becomes ' + fmt1(d.s.task) + ' on the grid.';
+      div.appendChild(p1);
+      div.appendChild(p2);
+      body.appendChild(div);
+    });
+
+    hideConfirm(false);
+  }
+
+  $('results-back-btn').addEventListener('click', function () {
+    state.q = ITEMS.length - 1;
+    showScreen('survey', true);
+  });
+
+  function hideConfirm(returnFocus) {
+    $('confirm-box').hidden = true;
+    $('start-over-btn').setAttribute('aria-expanded', 'false');
+    if (returnFocus) $('start-over-btn').focus();
+  }
+
+  $('start-over-btn').addEventListener('click', function () {
+    $('confirm-box').hidden = false;
+    $('start-over-btn').setAttribute('aria-expanded', 'true');
+    $('confirm-box').scrollIntoView({ block: 'nearest' });
+    $('confirm-yes').focus();
+  });
+  $('confirm-no').addEventListener('click', function () { hideConfirm(true); });
+  $('confirm-box').addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') hideConfirm(true);
+  });
+  $('confirm-yes').addEventListener('click', function () {
+    clearSaved();
+    state = freshState();
+    hideConfirm(false);
+    $('results-grid').innerHTML = '';
+    $('boss-cards').innerHTML = '';
+    $('calc-body').innerHTML = '';
+    document.querySelector('details.calc').open = false;
+    showScreen('names', true);
+  });
+
+  /* ---------------- Instructor view: index.html?grid ---------------- */
+
+  function downloadBlob(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  function startGridView() {
+    document.title = 'Blank Leadership Grid';
+    $('app-header').hidden = true;
+    ['names', 'survey', 'results'].forEach(function (s) { $('screen-' + s).hidden = true; });
+    $('screen-grid').hidden = false;
+    $('blank-grid').innerHTML = LG.draw({ idPrefix: 'blank' });
+
+    $('dl-svg').addEventListener('click', function () {
+      var svg = '<?xml version="1.0" encoding="UTF-8"?>\n' + LG.draw({ idPrefix: 'blank' }) + '\n';
+      downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), 'blank-grid.svg');
+    });
+
+    $('dl-png').addEventListener('click', function () {
+      var SIZE = 2000;
+      var svg = LG.draw({ idPrefix: 'blank', pixelSize: SIZE });
+      var img = new Image();
+      img.onload = function () {
+        var canvas = document.createElement('canvas');
+        canvas.width = SIZE;
+        canvas.height = SIZE;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, SIZE, SIZE);
+        ctx.drawImage(img, 0, 0, SIZE, SIZE);
+        canvas.toBlob(function (blob) { downloadBlob(blob, 'blank-grid.png'); }, 'image/png');
+      };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
+  }
+
+  /* ---------------- Start ---------------- */
+
+  var params = new URLSearchParams(window.location.search);
+  if (params.has('grid')) {
+    startGridView();
+    return;
+  }
+
+  buildNameFields();
+  var saved = loadState();
+  if (saved) state = saved;
+  var startAt = state.screen;
+  if (startAt !== 'names' && validateNames().some(Boolean)) startAt = 'names';
+  showScreen(startAt, false);
+})();
+</script>
+</body>
+</html>
