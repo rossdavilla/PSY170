@@ -1,6 +1,6 @@
 # Plot Your Past Bosses (Leadership Grid)
 
-An in-class activity for PSY170. Students name three bosses, rate each one on 8 behavior questions (4 consideration items and 4 initiating structure items), and see all three plotted on Blake and Mouton's Leadership Grid. They then copy those spots into a Top Hat click-on-target question.
+An in-class activity for PSY170. Students name three bosses, rate each one on 8 behavior questions (4 consideration items and 4 initiating structure items), and see all three plotted on Blake and Mouton's Leadership Grid. They then copy those spots into a Top Hat click-on-target question by eye, using the gridlines.
 
 ## Files
 
@@ -38,4 +38,9 @@ The grid in the app, the `?grid` view, and both image files all come from the sa
 - Relationship score = mean of R1 to R4. Task score = mean of T1 to T4. Both are on the 1 to 5 answer scale.
 - Each mean is converted to the 1 to 9 grid: `grid = 1 + 2 x (mean - 1)`, so 1 becomes 1, 3 becomes 5, and 5 becomes 9.
 - Quadrants are split at 5. A score of exactly 5 is reported as "on the line between" the two neighboring styles, and (5, 5) as the center of the grid.
-- If bosses land on the same or nearly the same spot, the markers are spread apart slightly and a dot with a short line marks the exact spot. The score cards always show the exact values.
+- If bosses land on the same or nearly the same spot, the markers are spread apart slightly and a dot with a short line marks the exact spot.
+- The results screen shows only the grid (no score text or explanations), since the terms are covered in class.
+
+## Layout
+
+Every screen fits in a 720 x 450 window with no scrolling (handy for a Top Hat embed or a projected slide). On phones narrower than 600 px, the layout stacks and scrolls.
