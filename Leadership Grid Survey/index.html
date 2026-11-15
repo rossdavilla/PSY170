@@ -145,15 +145,6 @@
   .q-bar { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
   .q-bar span { display: block; height: 100%; background: var(--accent); }
 
-  .instructions {
-    background: #eef2ff;
-    border-left: 4px solid var(--accent);
-    border-radius: 6px;
-    padding: 3px 10px;
-    margin-bottom: 6px;
-    font-size: 0.9rem;
-  }
-
   .q-text { font-size: 1.15rem; margin-bottom: 6px; }
   .q-text .stem { font-weight: 500; color: var(--muted); }
 
@@ -294,8 +285,6 @@
         <span id="q-count">Question 1 of 8</span>
         <div class="q-bar" aria-hidden="true"><span id="q-bar-fill" style="width:12.5%"></span></div>
       </div>
-
-      <p class="instructions" id="instructions">For each question, rate how often each person did this. If you're not sure, go with your best guess.</p>
 
       <h2 class="q-text" id="q-text" tabindex="-1"></h2>
 
@@ -858,7 +847,6 @@ var LG = (function () {
     var q = state.q, it = ITEMS[q];
     $('q-count').textContent = 'Question ' + (q + 1) + ' of ' + ITEMS.length;
     $('q-bar-fill').style.width = ((q + 1) / ITEMS.length * 100) + '%';
-    $('instructions').hidden = (q !== 0);
 
     var qt = $('q-text');
     qt.innerHTML = '';
